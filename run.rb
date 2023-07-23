@@ -4,10 +4,13 @@ require './inventory.rb'
 require './google_sync.rb'
 require 'json'
 
-urls = JSON.parse(open("./urls.json").read)
+urls = JSON.parse(ENV['urls'] || open("./urls.json").read)
+credential = ENV['CREDENTIAL']
 
-inventory = Inventory.new(urls['profile'])
-# inventory.print
+urls.each do |url|
+  inventory = Inventory.new(url['profile'])
+  # inventory.print
 
-sync = GoogleSync.new(urls['sheet'])
-puts sync.update(inventory)
+  sync = GoogleSync.new(url['sheet'], credential)
+  puts sync.update(inventory).to_json
+end

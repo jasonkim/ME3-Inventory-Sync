@@ -5,7 +5,6 @@ require "fileutils"
 
 # Follow https://developers.google.com/sheets/api/quickstart/ruby to enable google sheets api
 
-OOB_URI = "urn:ietf:wg:oauth:2.0:oob".freeze
 APPLICATION_NAME = "ME3 Sync".freeze
 CREDENTIALS_PATH = "credentials.json".freeze
 # The file token.yaml stores the user's access and refresh tokens, and is
@@ -26,11 +25,16 @@ SPREADSHEET_ID = /docs.google.com\/spreadsheets\/d\/(.{44})/
 class GoogleSync
   attr_reader :id, :title_id_map
 
-  def initialize(url)
+  def initialize(url, credential = nil)
     if match = url.match(SPREADSHEET_ID)
       @id = match.captures.first
     else
       raise "No ID found for #{url}"
+    end
+    @credential = if credential
+      StringIO.new(credential)
+    else
+      File.open(CREDENTIALS_PATH)
     end
 
     @title_id_map = {}
@@ -48,7 +52,7 @@ class GoogleSync
   end
 
   def update(inventory)
-    service.batch_update_spreadsheet(id, request(inventory), {})
+    service.batch_update_spreadsheet(id, request(inventory))
   end
 
   def request(inventory)
@@ -107,20 +111,11 @@ private
   #
   # @return [Google::Auth::UserRefreshCredentials] OAuth2 credentials
   def authorize
-    client_id = Google::Auth::ClientId.from_file CREDENTIALS_PATH
-    token_store = Google::Auth::Stores::FileTokenStore.new file: TOKEN_PATH
-    authorizer = Google::Auth::UserAuthorizer.new client_id, SCOPE, token_store
-    user_id = "default"
-    credentials = authorizer.get_credentials user_id
-    if credentials.nil?
-      url = authorizer.get_authorization_url base_url: OOB_URI
-      puts "Open the following URL in the browser and enter the " \
-           "resulting code after authorization:\n" + url
-      code = gets
-      credentials = authorizer.get_and_store_credentials_from_code(
-        user_id: user_id, code: code, base_url: OOB_URI
-      )
-    end
-    credentials
+    authorizer = Google::Auth::ServiceAccountCredentials.make_creds(
+      json_key_io: @credential,
+      scope: SCOPE)
+
+    authorizer.fetch_access_token!
+    authorizer
   end
 end
