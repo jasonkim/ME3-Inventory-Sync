@@ -4,7 +4,7 @@ require './inventory.rb'
 require './google_sync.rb'
 require 'json'
 
-urls = JSON.parse(ENV['urls'] || open("./urls.json").read)
+urls = JSON.parse(ENV['URLS'] || open("./urls.json").read)
 credential = ENV['CREDENTIAL']
 
 urls.each do |url|
