@@ -1,6 +1,6 @@
 [
   {
-    "profile": "enter N7 HQ profile url here (ex. https://n7hq.masseffect.com/home/inventory/?name=[name]&platform=xbox)",
+    "profile": "enter N7 HQ profile url here (ex. http://n7hq.masseffect.com/home/inventory/?name=[name]&platform=xbox)",
     "sheet": "enter google sheet url here (ex. https://docs.google.com/spreadsheets/d/[id]/edit)"
   }
 ]
