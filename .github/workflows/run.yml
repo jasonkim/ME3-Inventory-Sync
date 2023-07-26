@@ -6,10 +6,6 @@ on:
 permissions:
   contents: read
 
-env:
-  # Setting environment variables with the value of a configuration variable/secret
-  URLS: ${{ vars.URLS }}
-  CREDENTIAL: ${{ secrets.CREDENTIAL }}
 
 jobs:
   update:
@@ -23,4 +19,8 @@ jobs:
         ruby-version: '3.1'
         bundler-cache: true # runs 'bundle install' and caches installed gems automatically
     - name: Run
+      env:
+        # Setting environment variables with the value of a configuration variable/secret
+        URLS: ${{ vars.URLS }}
+        CREDENTIAL: ${{ secrets.CREDENTIAL }}
       run: bundle exec ruby run.rb
