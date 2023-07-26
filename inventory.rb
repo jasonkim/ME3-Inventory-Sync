@@ -1,13 +1,12 @@
 require 'nokogiri'
 require 'open-uri'
-require 'openssl'
 require './item.rb'
 
 class Inventory
   attr_reader :weapons, :mods, :characters, :consumables, :gears
 
   def initialize(url)
-    doc = Nokogiri::HTML(URI.open(url, {ssl_verify_mode: OpenSSL::SSL::OP_ALLOW_UNSAFE_LEGACY_RENEGOTIATION }))
+    doc = Nokogiri::HTML(URI.open(url))
     inventory = doc.css('div#inventory div#inventory_content')
     @weapons = inventory.css('div#weapons_content div.card').map{|v|Item.new(:weapon, v)}
     @mods = inventory.css('div#weapon_mods_content div.card').map{|v|Item.new(:mod, v)}
