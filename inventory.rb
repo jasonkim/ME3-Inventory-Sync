@@ -1,12 +1,12 @@
 require 'nokogiri'
-require 'open-uri'
+require 'net/http'
 require './item.rb'
 
 class Inventory
   attr_reader :weapons, :mods, :characters, :consumables, :gears
 
   def initialize(url)
-    doc = Nokogiri::HTML(URI.open(url))
+    doc = Nokogiri::HTML(Net::HTTP.get(URI.parse(url)))
     inventory = doc.css('div#inventory div#inventory_content')
     @weapons = inventory.css('div#weapons_content div.card').map{|v|Item.new(:weapon, v)}
     @mods = inventory.css('div#weapon_mods_content div.card').map{|v|Item.new(:mod, v)}
