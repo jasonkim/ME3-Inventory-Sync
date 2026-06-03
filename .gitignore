@@ -1,2 +1,4 @@
 token.yaml
 Gemfile.lock
+.bundle/
+vendor/
